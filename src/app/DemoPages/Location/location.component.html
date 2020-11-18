@@ -1,0 +1,238 @@
+<style>
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  .form-control:valid {
+    background-image: none;
+  }
+  .form-control:is-invalid {
+    background-image: none;
+  }
+</style>
+<div>
+  <iframe id="ncovi-map" src="https://maps.vnpost.vn/corona/#/app" height="500" width="100%" border="0"></iframe>
+</div>
+
+<div class="search-wrapper mt-4" [class.active]="isActive">
+  <div class="input-holder">
+    <input type="text" placeholder="Tìm địa điểm" class="search-input" [(ngModel)]="name" (input)="Search()">
+    <button class="search-icon" (click)="isActive = true"><span></span></button>
+  </div>
+  <button class="close" (click)="isActive = false"></button>
+</div>
+
+<!--Modal add location-->
+<div class="row">
+  <div class="col-lg-12">
+    <ng-template #content let-c="close" let-d="dismiss">
+      <div class="modal-header">
+        <h4 class="modal-title">Thêm địa điểm</h4>
+        <button #btnClose type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="form" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+          <div class="position-relative form-group">
+            <label for="province">Tỉnh/Tp</label>
+            <input name="province" id="province" formControlName="province" type="text" class="form-control"
+                   [ngClass]="{ 'is-invalid': submitted && f.province.errors}" (input)="existId = false">
+            <div *ngIf="submitted && f.province.errors" class="invalid-feedback">
+              <div *ngIf="f.province.errors.required">Nhập tỉnh/tp</div>
+            </div>
+          </div>
+          <div class="position-relative form-group">
+            <label for="name">Địa chỉ</label>
+            <input name="name" id="name" formControlName="name" type="text" class="form-control"
+                   [ngClass]="{ 'is-invalid': submitted && f.name.errors}">
+            <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
+              <div *ngIf="f.name.errors.required">Nhập địa điểm</div>
+            </div>
+          </div>
+          <div class="position-relative form-group">
+            <label for="lat">Vĩ độ</label>
+            <input name="lat" id="lat" formControlName="lat" type="text" class="form-control"
+                   [ngClass]="{ 'is-invalid': submitted && f.lat.errors }">
+            <div *ngIf="submitted && f.lat.errors" class="invalid-feedback">
+              <div *ngIf="f.lat.errors.required">Nhập vĩ độ</div>
+            </div>
+          </div>
+          <div class="position-relative form-group">
+            <label for="lng">Kinh độ</label>
+            <input name="lng" id="lng" formControlName="lng" type="text" class="form-control"
+                   [ngClass]="{ 'is-invalid': submitted && f.lng.errors }">
+            <div *ngIf="submitted && f.lng.errors" class="invalid-feedback">
+              <div *ngIf="f.lng.errors.required">Nhập kinh độ</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="c('Close click')">Hủy</button>
+            <button type="submit" class="btn btn-primary">Thêm</button>
+          </div>
+        </form>
+      </div>
+    </ng-template>
+
+<!--    Modal list patient-->
+    <ng-template #patientLocation let-c="close" let-d="dismiss">
+      <div class="modal-header">
+        <h4 class="modal-title">Danh sách bệnh nhân tại địa điểm</h4>
+        <button #btnClose type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body ml-2">
+        <div class="position-relative form-group" style="height: 170px; overflow: auto">
+          <div *ngFor="let patient of currentHospital[0].patient">
+            <p>{{patient?.patientName}}</p>
+          </div>
+        </div>
+        <hr>
+        <form [formGroup]="addPatientLocationForm" (ngSubmit)="onSubmitPatient()">
+          <div class="row mt-5">
+          </div>
+          <div class="row mb-2">
+            <div class="col-3">
+              <label for="">Mã bệnh nhân</label><br>
+            </div>
+            <div class="col-7">
+              <select name="patientName" id="patientName" formControlName="patientName" type="text" class="form-control" [class.select]="existId"
+                      [ngClass]="{ 'is-invalid': submitted && v.patientName.errors }">
+                <option selected="selected">Chọn bệnh nhân</option>
+                <option *ngFor="let item of currentPatientLocations" value="{{item.id}}" (input)="existId = false">{{item.patientName}} {{item.added}}</option>
+              </select>
+              <div *ngIf="submitted && v.patientName.errors" class="invalid-feedback">
+                <div>Nhập mã bệnh nhân</div>
+              </div>
+              <div *ngIf="existId" style="color: #C71C22; font-size: 12px;">
+                <div>Bệnh nhân đã được thêm</div>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-3">
+              <label for="">Ngày xác nhận</label><br>
+            </div>
+            <div class="col-7">
+              <input name="verifyDate" id="verifyDate" formControlName="verifyDate" type="date" class="mb-2 form-control"
+                     [ngClass]="{ 'is-invalid': submitted && v.verifyDate.errors}">
+              <div *ngIf="submitted && v.verifyDate.errors" class="invalid-feedback">
+                <div>Nhập ngày mắc bệnh</div>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-3">
+              <label for="">Ghi chú</label><br>
+            </div>
+            <div class="col-7">
+              <textarea name="" placeholder="Ghi chú" id="" rows="4" style="width: 100%; outline: none; padding: 7px"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="c('Close click')">Hủy</button>
+            <button type="submit" class="btn btn-primary">Cập nhật</button>
+          </div>
+        </form>
+      </div>
+    </ng-template>
+
+<!--    Modal update location-->
+    <ng-template #location let-c="close" let-d="dismiss">
+      <div class="modal-header">
+        <h4 class="modal-title">Sửa thông tin khu vực dịch bệnh</h4>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form name="form" [formGroup]="updateForm" (ngSubmit)="onSubmitUpdate(dataLocation.id)">
+          <div class="position-relative form-group">
+            <label for="province">Tỉnh/TP</label>
+            <input name="province" formControlName="province" type="text" class="form-control"
+                   [ngClass]="{ 'is-invalid': submitted && checkUpdateForm?.province?.errors }" (input)="existId = false">
+            <div *ngIf="submitted && checkUpdateForm?.province?.errors" class="invalid-feedback">
+              <div *ngIf="checkUpdateForm?.province?.errors?.required">Nhập tỉnh/tp</div>
+            </div>
+          </div>
+          <div class="position-relative form-group">
+            <label for="name">Địa chỉ</label>
+            <input name="name" formControlName="name" type="text" class="form-control"
+                   [ngClass]="{ 'is-invalid': submitted && checkUpdateForm?.name?.errors }">
+            <div *ngIf="submitted && checkUpdateForm?.name?.errors" class="invalid-feedback">
+              <div *ngIf="checkUpdateForm?.name?.errors?.required">Nhập địa chỉ </div>
+            </div>
+          </div>
+          <div class="position-relative form-group">
+            <label for="lat">Kinh độ</label>
+            <input formControlName="lat" type="text" class="form-control"
+                   [ngClass]="{ 'is-invalid': submitted && checkUpdateForm?.lat?.errors }">
+            <div *ngIf="submitted && checkUpdateForm?.lat?.errors" class="invalid-feedback">
+              <div *ngIf="checkUpdateForm?.lat?.errors?.required">Nhập kinh độ</div>
+            </div>
+          </div>
+          <div class="position-relative form-group">
+            <label for="lng">Vĩ độ</label>
+            <input formControlName="lng" type="text" class="form-control"
+                   [ngClass]="{ 'is-invalid': submitted && checkUpdateForm?.lng?.errors }">
+            <div *ngIf="submitted && checkUpdateForm?.lng?.errors" class="invalid-feedback">
+              <div *ngIf="checkUpdateForm?.lng?.errors?.required">Nhập vĩ độ</div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="btnCloseUpdate" type="button" class="btn btn-secondary" (click)="c('Close click')">Hủy</button>
+            <button type="submit" class="btn btn-primary">Lưu</button>
+          </div>
+        </form>
+      </div>
+    </ng-template>
+
+    <div class="page-title-actions mb-3 text-right">
+      <button type="button" class="btn-shadow d-inline-flex align-items-center btn btn-success" (click)="open(content)">
+        <fa class="mr-2" name="plus"></fa>
+        Thêm địa điểm
+      </button>
+    </div>
+    <div class="main-card mb-3 card" >
+      <div class="card-body">
+        <table class="mb-0 table table-striped">
+          <thead>
+          <tr>
+            <th>Thêm</th>
+            <th>Địa điểm</th>
+            <th>Lat</th>
+            <th>Ing</th>
+            <th> Tác Vụ</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let item of datas | paginate: { itemsPerPage: 20, currentPage: p }; let i = index" >
+            <td>
+              <button type="button" class="mt-1 btn btn-primary" (click)="open(patientLocation); onClickShowModal(item.id);">Bệnh nhân</button>
+            </td>
+            <td style="vertical-align: inherit">{{item.name}}</td>
+            <td style="vertical-align: inherit">{{item.lat}}</td>
+            <td style="vertical-align: inherit">{{item.lng}}</td>
+
+            <td><i class="vsm-icon pe-7s-config mr-2 ico-edit" style="cursor: pointer;font-size: 20px;" (click)="openUpdateLocation(location, item.id)"></i></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <p *ngIf="datas.length == 0" style="text-align: center;margin-top: 20px;font-size: large;"> Chưa có địa điểm nào cần lưu ý ! </p>
+    </div>
+  </div>
+</div>
+<pagination-controls (pageChange)="p = $event"></pagination-controls>
+
+
+
+

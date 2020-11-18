@@ -1,0 +1,33 @@
+<div class="container-login">
+    <app-loading *ngIf="isLoading">{{ isLoading }}</app-loading>
+    <div class="wrap-login">
+    <div class="left-login">
+      <img src="../../../../assets/images/logo_byt.png" class="img-fluid" />
+    </div>
+    <form autocomplete="on" class="right-login"  [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <span class="login-title">Đăng nhập</span>
+
+      <div class="form-group">
+<!--        <label for="email">Email</label>-->
+        <input type="text" placeholder="Email" formControlName="email" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.email.errors }" />
+        <span class="login-icon"><i class="fa fa-envelope" aria-hidden="true"></i></span>
+        <div *ngIf="submitted && f.email.errors" class="invalid-feedback">
+          <div *ngIf="f.email.errors.required">Username is required</div>
+        </div>
+      </div>
+      <div class="form-group">
+<!--        <label for="password">Mật khẩu</label>-->
+        <input type="password" placeholder="Mật khẩu" formControlName="password" class="form-control" [ngClass]="{ 'is-invalid': submitted && f.password.errors }" />
+        <span class="login-icon"><i class="fa fa-lock" aria-hidden="true"></i></span>
+        <div *ngIf="submitted && f.password.errors" class="invalid-feedback">
+          <div *ngIf="f.password.errors.required">Password is required</div>
+        </div>
+      </div>
+      <button  class="btn btn-primary btn-sm">
+<!--        <span *ngIf="loading" class="spinner-border spinner-border-sm mr-1"></span>-->
+        Đăng nhập
+      </button>
+      <div *ngIf="error" class="alert alert-danger mt-3 mb-0">{{error}}</div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,73 @@
+<div [class]="'app-sidebar sidebar-shadow ' + (config$ | async).sidebarTheme" (mouseover)="sidebarHover()"
+     (mouseout)="sidebarHover()">
+  <div class="app-header__logo">
+    <div class="logo-src"></div>
+    <div class="header__pane ml-auto">
+      <button type="button" class="hamburger close-sidebar-btn hamburger--elastic"
+              [ngClass]="{'is-active' : globals.toggleSidebar}" (click)="toggleSidebar()">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+      </button>
+    </div>
+  </div>
+  <div class="app-sidebar-content">
+    <div class="app-sidebar-scroll">
+      <perfect-scrollbar [autoPropagation]="true">
+        <div class="v-sidebar-menu vsm-default">
+          <div class="vsm-list">
+            <ngb-accordion [destroyOnHide]="false" [closeOthers]="true" [activeIds]="extraParameter">
+              <ngb-panel>
+                <ng-template ngbPanelHeader>
+                  <div class="vsm-header">Trang chủ ADMIN</div>
+                </ng-template>
+              </ngb-panel>
+              <ngb-panel id="dashboardsMenu">
+                <ng-template ngbPanelHeader>
+                  <button ngbPanelToggle class="vsm-link" routerLinkActive="active-item"
+                          [routerLinkActiveOptions]="{exact: true}">
+                    <i class="vsm-icon pe-7s-home"></i>
+                    <a routerLink="" class="vsm-link pl-0"><span class="vsm-title">Số liệu thống kê</span></a>
+                  </button>
+                </ng-template>
+              </ngb-panel>
+              <ngb-panel>
+                <ng-template ngbPanelHeader>
+                  <div class="vsm-header">DANH SÁCH USER</div>
+                </ng-template>
+              </ngb-panel>
+              <ngb-panel id="elementsMenu">
+                <ng-template ngbPanelHeader>
+                  <button class="vsm-link" routerLinkActive="active-item" routerLink="/admin/list-user">
+                    <i class="vsm-icon pe-7s-users"></i>
+                    <span class="vsm-title">Danh sách user</span>
+                  </button>
+                </ng-template>
+              </ngb-panel>
+              <ngb-panel>
+                <ng-template ngbPanelHeader>
+                  <div class="vsm-header">DANH SÁCH BỆNH NHÂN</div>
+                </ng-template>
+              </ngb-panel>
+              <ngb-panel id="pagesMenu3">
+                <ng-template ngbPanelHeader>
+                  <button ngbPanelToggle class="vsm-link" routerLinkActive="active-item" routerLink="/admin/list-patient">
+                    <i class="vsm-icon pe-7s-shield"></i>
+                    <span class="vsm-title">Bệnh nhân</span>
+                  </button>
+                </ng-template>
+              </ngb-panel>
+            </ngb-accordion>
+            <div class="vsm-header">VỊ TRÍ</div>
+            <div class="vsm-item">
+              <a routerLink="/admin/location" routerLinkActive="active-item" class="vsm-link">
+                <i class="vsm-icon pe-7s-map-marker"></i>
+                <span class="vsm-title">Khu vực dịch bệnh</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </perfect-scrollbar>
+    </div>
+  </div>
+</div>

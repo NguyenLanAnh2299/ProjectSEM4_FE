@@ -1,0 +1,17 @@
+.btn-vietnam {
+    display: flex;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    min-width: 93px;
+    cursor: auto!important;
+}
+
+.btn-foreign {
+    display: flex;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    min-width: 93px;
+    cursor: auto!important;
+}

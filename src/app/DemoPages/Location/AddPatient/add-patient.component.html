@@ -1,0 +1,82 @@
+<style>
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+
+  .form-control:valid {
+    background-image: none;
+  }
+
+
+  .form-control:is-invalid {
+    background-image: none;
+  }
+</style>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="main-card mb-3 card">
+      <div class="card-body"><h5 class="card-title">Thêm bệnh nhân vào khu vực</h5>
+        <hr>
+        <form [formGroup]="addPatientLocationForm" (ngSubmit)="onSubmit()">
+          <div class="row mt-5">
+          </div>
+          <div class="row mb-2">
+            <div class="col-3">
+              <label for="">Tên bệnh nhân</label><br>
+            </div>
+            <div class="col-7">
+              <select name="name" id="name" formControlName="name" type="text" class="form-control"
+                     [ngClass]="{'is-invalid': submitted && f.name.errors}">
+                <option selected="selected">Chọn bệnh nhân</option>
+                <option *ngFor="let patient of patientData">
+                  <p>{{patient.patientName}}</p>
+                </option>
+              </select>
+              <div *ngIf="submitted && f.name.errors" class="invalid-feedback">
+                <div *ngIf="f.name.errors.required">Nhập tên bệnh nhân</div>
+              </div>
+            </div>
+          </div>
+          <div class="row mb-2">
+            <div class="col-3">
+              <label for="">Ngày xác nhận</label><br>
+            </div>
+            <div class="col-7">
+              <input name="verifyDatePatient" id="verifyDatePatient" formControlName="verifyDatePatient" type="date" class="mb-2 form-control"
+                     [ngClass]="{ 'is-invalid': submitted && f.verifyDatePatient.errors }">
+              <div *ngIf="submitted && f.verifyDatePatient.errors" class="invalid-feedback">
+                <div *ngIf="f.verifyDatePatient.errors.required">Nhập ngày mắc bệnh</div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-3">
+              <label for="">Ghi chú</label><br>
+            </div>
+            <div class="col-7">
+              <textarea name="" placeholder="Ghi chú" id="" rows="4" style="width: 100%; outline: none; padding: 7px"></textarea>
+            </div>
+          </div>
+          <hr>
+          <div class="float-right mr-5 pr-5">
+            <button class="btn-shadow d-inline-flex align-items-center btn btn-secondary"
+                    style="min-width: 86px; margin-right: 10px; justify-content: center"
+            >
+              <a routerLink="/admin/location" >Quay lại</a>
+            </button>
+            <button class="btn-shadow d-inline-flex align-items-center btn btn-success">Thêm vào</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
